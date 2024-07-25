@@ -1,0 +1,63 @@
+from flask import Flask, jsonify
+import psycopg2
+
+app = Flask(__name__)
+
+def get_db_connection():
+    conn = psycopg2.connect(
+        host="localhost",
+        user="postgres",
+        password="Fortuna3197kg@",
+        dbname="postgres"  # Database name
+    )
+    return conn
+
+# Function to fetch data from a given table
+def fetch_table_data(table_name):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(f'SELECT * FROM {table_name}')
+    rows = cursor.fetchall()
+    columns = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    return [dict(zip(columns, row)) for row in rows]
+
+# API Endpoints for each table
+@app.route('/api/buildings', methods=['GET'])
+def get_buildings():
+    data = fetch_table_data('buildings')
+    return jsonify(data)
+
+@app.route('/api/citizens', methods=['GET'])
+def get_citizens():
+    data = fetch_table_data('citizens')
+    return jsonify(data)
+
+@app.route('/api/items', methods=['GET'])
+def get_items():
+    data = fetch_table_data('items')
+    return jsonify(data)
+
+@app.route('/api/pets', methods=['GET'])
+def get_pets():
+    data = fetch_table_data('pets')
+    return jsonify(data)
+
+@app.route('/api/territories', methods=['GET'])
+def get_territories():
+    data = fetch_table_data('territories')
+    return jsonify(data)
+
+@app.route('/api/units', methods=['GET'])
+def get_units():
+    data = fetch_table_data('units')
+    return jsonify(data)
+
+@app.route('/api/upgrades', methods=['GET'])
+def get_upgrades():
+    data = fetch_table_data('upgrades')
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(debug=True)
